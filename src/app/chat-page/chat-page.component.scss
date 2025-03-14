@@ -1,0 +1,19 @@
+@use '@angular/material' as mat;
+
+mat-sidenav-container {
+  height: calc(100vh - 64px); 
+  width: 100%;
+  background: var(--mat-sys-surface-container-low) !important;
+}
+
+mat-sidenav {
+  width: 300px;
+  padding: 10px;
+  border-radius: 0%;
+}
+
+.chat-controls {
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+}

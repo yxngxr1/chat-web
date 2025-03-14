@@ -1,0 +1,14 @@
+<mat-sidenav-container>
+  <mat-sidenav mode="side" opened>
+    <div class="chat-controls">
+      <button mat-raised-button color="accent" (click)="openPrivateChatDialog()">New Private</button>
+      <button mat-raised-button color="accent" (click)="openGroupChatDialog()">New Group</button>
+    </div>
+    
+    <app-chat-list></app-chat-list>
+    
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <app-chat-dialog></app-chat-dialog>
+  </mat-sidenav-content>
+</mat-sidenav-container>

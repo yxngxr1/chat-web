@@ -1,0 +1,62 @@
+@use '@angular/material' as mat;
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Просто растягиваем на всю высоту родителя
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid var(--mat-sys-outline);
+}
+
+.chat-title {
+  flex: 1;
+}
+
+.chat-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.messages-container {
+  flex: auto; 
+  background: var(--mat-sys-surface-container-low);
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+}
+
+mat-list-item {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
+}
+
+.message-input {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  flex-shrink: 0;
+}
+
+.input-field {
+  flex: 1;
+  max-width: 100%;
+}
+
+.mat-form-field {
+  width: 100%;
+}
+
+.no-chat {
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  margin-top: 20px;
+}

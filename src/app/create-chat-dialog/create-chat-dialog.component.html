@@ -1,0 +1,16 @@
+<h2 mat-dialog-title>{{ data.isGroup ? 'Create Group Chat' : 'Create Private Chat' }}</h2>
+<mat-dialog-content>
+    <mat-form-field>
+    <input matInput placeholder="Search by nickname" [(ngModel)]="searchQuery" (input)="filterUsers()">
+    </mat-form-field>
+    <mat-list>
+    <mat-list-item *ngFor="let user of filteredUsers">
+        <span>{{ user.nickname }}</span>
+        <mat-checkbox *ngIf="data.isGroup" [(ngModel)]="user.selected"></mat-checkbox>
+    </mat-list-item>
+    </mat-list>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button mat-button (click)="dialogRef.close()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="createChat()">Create</button>
+</mat-dialog-actions>

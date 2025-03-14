@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+
+
+mat-list-item {  
+  border-radius: 10px;
+  
+  &.active-chat {
+    background: var(--mat-sys-primary-container) !important; 
+    color: var(--mat-sys-on-primary-container) !important;
+  }
+  
+  &:hover {
+    background: var(--mat-sys-surface-container-low); 
+  }
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  user-select: none;
+}

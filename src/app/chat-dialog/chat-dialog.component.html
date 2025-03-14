@@ -1,0 +1,26 @@
+<div class="chat-container" *ngIf="chatId; else noChat">
+  <div class="chat-header">
+    <div class="chat-title">Chat #{{ chatId }}</div>
+    <div class="chat-actions">
+      <button mat-icon-button><mat-icon>edit</mat-icon></button>
+      <button mat-icon-button><mat-icon>delete</mat-icon></button>
+      <button mat-icon-button><mat-icon>person_add</mat-icon></button>
+    </div>
+  </div>
+  <div class="messages-container">
+    <mat-list class="messages">
+      <mat-list-item *ngFor="let message of messages">{{ message }}</mat-list-item>
+    </mat-list>
+  </div>
+  <div class="message-input">
+    <mat-form-field appearance="outline" class="input-field">
+      <input matInput [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Type a message">
+      <button mat-icon-button matSuffix (click)="sendMessage()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+</div>
+<ng-template #noChat>
+  <p class="no-chat">Select a chat to start messaging</p>
+</ng-template>
