@@ -3,7 +3,7 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 100%; // Просто растягиваем на всю высоту родителя
+  height: 100%; 
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
@@ -27,16 +27,50 @@
 .messages-container {
   flex: auto; 
   background: var(--mat-sys-surface-container-low);
+  display: flex;
+  align-items: flex-start;
+  overflow-y: auto;
 }
 
 .messages {
+  width: 100%;
   display: flex;
   flex-direction: column;
+  gap: 10px;
+  padding: 10px 10px;
 }
 
 mat-list-item {
-  font-size: 14px;
-  color: var(--mat-sys-on-surface);
+  border-radius: 0.8em;
+  padding: 0px 8px !important;
+  height: auto !important;
+  width: fit-content !important; /* Ширина зависит только от содержимого */
+  max-width: 80%;
+  min-width: 10%;
+  background: var(--mat-sys-surface-container-high);
+}
+
+mat-list-item.right-aligned {
+  align-self: flex-end; /* Привязывает элемент к правому краю внутри flex-контейнера .messages */
+}
+
+.message-content {
+  
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: left;
+}
+
+.message-text {
+  text-wrap: wrap;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .message-input {

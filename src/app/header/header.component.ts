@@ -4,6 +4,7 @@ import { ThemeService } from '../services/theme.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { TitleCasePipe } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 
 @Component({
@@ -19,5 +20,12 @@ import { TitleCasePipe } from '@angular/common';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent {
-  protected themeService = inject(ThemeService);
+  constructor(
+    public themeService: ThemeService, // Предполагаемый сервис тем
+    private authService: AuthService   // Сервис авторизации
+  ) {}
+
+  logout() {
+    this.authService.logout();
+  }
 }

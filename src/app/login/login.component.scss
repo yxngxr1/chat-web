@@ -1,0 +1,32 @@
+// login.component.scss
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; // Полная высота экрана
+  }
+  
+  mat-card {
+    width: 100%;
+    max-width: 400px; // Ограничение ширины формы
+    padding: 16px; // Внутренний отступ
+  
+    mat-tab-group {
+      width: 100%;
+  
+      form {
+        padding: 10px 0px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px; // Расстояние между элементами формы
+  
+        mat-form-field {
+          width: 100%;
+        }
+  
+        button {
+          align-self: flex-end; // Кнопка прижимается к правому краю
+        }
+      }
+    }
+  }

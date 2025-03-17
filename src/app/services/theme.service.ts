@@ -16,7 +16,7 @@ export class ThemeService {
     { name: 'dark', icon: 'dark_mode' },
     { name: 'system', icon: 'desktop_windows' },
   ] as const;
-
+  
   selectedTheme = computed(() =>
     this.themes.find((t) => t.name === this.appTheme())
   );
@@ -30,8 +30,14 @@ export class ThemeService {
   }
 
   constructor() {
+    const savedTheme = localStorage.getItem('appTheme') as 'light' | 'dark' | 'system';
+    if (savedTheme && this.themes.some(t => t.name === savedTheme)) {
+      this.appTheme.set(savedTheme);
+    }
+
     effect(() => {
       const appTheme = this.appTheme();
+      localStorage.setItem('appTheme', appTheme);
       const colorScheme = appTheme === 'system' ? 'light dark' : appTheme;
       document.body.style.setProperty('color-scheme', colorScheme);
     });

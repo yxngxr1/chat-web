@@ -9,7 +9,18 @@
   </div>
   <div class="messages-container">
     <mat-list class="messages">
-      <mat-list-item *ngFor="let message of messages">{{ message }}</mat-list-item>
+      <mat-list-item class="message-item" 
+        *ngFor="let message of messages$ | async" 
+        [ngClass]="{'right-aligned': message.senderId === currentId}">
+        <!-- <img [src]="message.avatarUrl || 'default-avatar.png'" class="message-avatar" alt="Avatar"> -->
+        <div class="message-content">
+          <div class="message-header">
+            <span class="message-sender">{{ message.senderId }}</span>
+            <span class="timestamp">{{ message.sentAt | date:'HH:mm' : 'ru' }}</span>
+          </div>
+          <span class="message-text">{{ message.content }}</span>
+        </div>
+      </mat-list-item>
     </mat-list>
   </div>
   <div class="message-input">

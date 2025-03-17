@@ -19,7 +19,7 @@ import { MatListModule } from '@angular/material/list';
     FormsModule
   ],
   templateUrl: './create-chat-dialog.component.html',
-  styleUrl: './create-chat-dialog.component.css'
+  styleUrl: './create-chat-dialog.component.scss'
 })
 export class CreateChatDialogComponent {
   searchQuery = '';

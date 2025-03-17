@@ -7,6 +7,8 @@ mat-toolbar {
   background: var(--mat-sys-tertiary);
   color: var(--mat-sys-on-tertiary);
 
+  gap: 10px;
+
   @include mat.icon-button-overrides(
     (
       icon-color: var(--mat-sys-on-primary),
