@@ -1,0 +1,38 @@
+.dialog-container {
+    width: 100%;
+}
+
+mat-dialog-content {
+    width: 100% !important;
+}
+
+mat-form-field {
+    width: 100%;
+}
+
+mat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+mat-list-item {  
+    border-radius: 10px;
+
+    &.selected-user {
+        background: var(--mat-sys-primary-container) !important; 
+        color: var(--mat-sys-on-primary-container) !important;
+    }
+
+    &:hover {
+        background: var(--mat-sys-surface-container-low); 
+    }
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    width: 100%; 
+    user-select: none;
+}

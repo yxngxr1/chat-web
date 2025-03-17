@@ -26,7 +26,8 @@ export class AuthService {
     return this.http.post<JwtAuthenticationResponse>(this.API_URL, loginRequest)
       .pipe(
         tap(response => {
-          console.log(response.accessToken);
+          const decodedToken = this.decodeToken(response.accessToken); 
+          console.log('токен:', decodedToken);
           this.setTokens(response.accessToken, response.refreshToken);
           this.isAuthenticatedSubject.next(true);
         })
@@ -73,10 +74,29 @@ export class AuthService {
     );
   }
 
+  getUserId(): number {
+    const token = this.getAccessToken();
+    if (!token) {
+      this.logout();
+      this.router.navigate(['/login']);
+      throw new Error('Токен отсутствует, выполнен logout');
+    }
+
+    const decoded = this.decodeToken(token);
+    if (!decoded?.id) {
+      this.logout();
+      this.router.navigate(['/login']);
+      throw new Error('ID пользователя не найден в токене, выполнен logout');
+    }
+
+    return decoded.id; // Теперь всегда возвращаем number
+  }
+
   private decodeToken(token: string): any {
     try {
-      const payload = token.split('.')[1]; // Берем payload из JWT
-      return JSON.parse(atob(payload)); // Декодируем base64 в объект
+      const payload = token.split('.')[1]; // Берем payload (вторая часть токена)
+      const decodedPayload = atob(payload); // Декодируем из base64
+      return JSON.parse(decodedPayload); // Преобразуем в объект
     } catch (e) {
       console.error('Ошибка декодирования токена:', e);
       return null;

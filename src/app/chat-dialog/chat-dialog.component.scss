@@ -62,6 +62,11 @@ mat-list-item.right-aligned {
   display: flex;
   justify-content: space-between;
   align-items: left;
+  gap: 10px;
+}
+
+.message-sender {
+  font-size: 14px;
 }
 
 .message-text {

@@ -1,7 +1,5 @@
 <mat-list role="list">
-  <mat-list-item 
-    *ngFor="let chat of chats$ | async"
-    matRipple
+  <mat-list-item matRipple *ngFor="let chat of chats$ | async"
     [ngClass]="{'active-chat': isActive(chat.id)}"
     (click)="navigateToChat(chat.id)">
     <div class="chat-item">

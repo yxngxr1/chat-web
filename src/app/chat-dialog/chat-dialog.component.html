@@ -3,7 +3,7 @@
     <div class="chat-title">Chat #{{ chatId }}</div>
     <div class="chat-actions">
       <button mat-icon-button><mat-icon>edit</mat-icon></button>
-      <button mat-icon-button><mat-icon>delete</mat-icon></button>
+      <button mat-icon-button (click)="onDeleteProject()"><mat-icon>delete</mat-icon></button>
       <button mat-icon-button><mat-icon>person_add</mat-icon></button>
     </div>
   </div>
@@ -11,7 +11,7 @@
     <mat-list class="messages">
       <mat-list-item class="message-item" 
         *ngFor="let message of messages$ | async" 
-        [ngClass]="{'right-aligned': message.senderId === currentId}">
+        [ngClass]="{'right-aligned': message.senderId === curId}">
         <!-- <img [src]="message.avatarUrl || 'default-avatar.png'" class="message-avatar" alt="Avatar"> -->
         <div class="message-content">
           <div class="message-header">
