@@ -1,0 +1,32 @@
+.dialog-container {
+    width: 100%;
+}
+
+h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-toggle {
+    margin-left: auto;
+}
+
+mat-dialog-content {
+    padding-top: 10px !important;
+}
+
+mat-form-field {
+    width: 100% !important; 
+}
+
+.title-users {
+    text-align: center;
+    margin: 0px;
+}
+
+.userItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

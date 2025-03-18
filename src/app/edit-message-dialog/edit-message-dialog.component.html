@@ -1,0 +1,13 @@
+<div class="dialog-container">
+    <h2 mat-dialog-title>{{ 'Изменение сообщения' }}</h2>
+    <mat-dialog-content>
+        <mat-form-field appearance="outline">
+            <mat-label>Название</mat-label>
+            <input matInput [(ngModel)]="message.content">
+        </mat-form-field>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+        <button mat-button color="primary" (click)="saveChanges()">Save</button>
+        <button mat-button mat-dialog-close>Close</button>
+    </mat-dialog-actions>
+</div>

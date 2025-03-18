@@ -68,20 +68,20 @@ export class CreateChatDialogComponent {
 
   createChat() {
     const selectedUsers = this.users.filter(user => user.selected);
-    if (!selectedUsers.length) {
-      console.warn('Выберите хотя бы одного пользователя');
-      return;
-    }
+    // if (!selectedUsers.length) {
+    //   console.warn('Выберите хотя бы одного пользователя');
+    //   return;
+    // }
     
     let chatType: 'PRIVATE' | 'GROUP' | 'SELF' = this.data.isGroup ? 'GROUP' : 'PRIVATE';
-    if (!this.data.isGroup && selectedUsers.length === 1 && selectedUsers[0].id === Number(this.authService.getUserId)) {
-      chatType = 'SELF'; // Если приватный чат и выбранный пользователь — это создатель
+    if (!this.data.isGroup && selectedUsers.length === 1 && selectedUsers[0].id === Number(this.authService.getUserId())) {
+      chatType = 'SELF'; 
     }
 
     const createChatRequest: CreateChatRequest = {
       name: "ZOV",
       userIds: selectedUsers.map(user => user.id),
-      chatType: this.data.isGroup ? 'GROUP' : 'PRIVATE'
+      chatType: chatType
     };
   
     this.chatService.createChat(createChatRequest).subscribe({

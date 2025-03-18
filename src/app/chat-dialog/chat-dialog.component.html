@@ -1,17 +1,23 @@
 <div class="chat-container" *ngIf="chatId; else noChat">
-  <div class="chat-header">
-    <div class="chat-title">Chat #{{ chatId }}</div>
+  <div class="chat-header"
+    matRipple
+    (click)="openChatDetails($event)">
+    <div class="chat-title">
+      {{ chat?.name || 'Loading...' }}
+    </div>
     <div class="chat-actions">
-      <button mat-icon-button><mat-icon>edit</mat-icon></button>
-      <button mat-icon-button (click)="onDeleteProject()"><mat-icon>delete</mat-icon></button>
-      <button mat-icon-button><mat-icon>person_add</mat-icon></button>
+      <button mat-icon-button (click)="openChatDetails($event)"><mat-icon>edit</mat-icon></button>
+      <button mat-icon-button (click)="onDeleteProject($event)"><mat-icon>delete</mat-icon></button>
+      <button mat-icon-button (click)="openAddPerson($event)"><mat-icon>person_add</mat-icon></button>
     </div>
   </div>
   <div class="messages-container">
     <mat-list class="messages">
       <mat-list-item class="message-item" 
         *ngFor="let message of messages$ | async" 
-        [ngClass]="{'right-aligned': message.senderId === curId}">
+        [ngClass]="{'right-aligned': message.senderId === curId}"
+        [cdkContextMenuTriggerFor]="messageMenu"
+        (contextmenu)="setCurrentMessage(message)">
         <!-- <img [src]="message.avatarUrl || 'default-avatar.png'" class="message-avatar" alt="Avatar"> -->
         <div class="message-content">
           <div class="message-header">
@@ -23,6 +29,14 @@
       </mat-list-item>
     </mat-list>
   </div>
+
+  <ng-template #messageMenu>
+    <div class="message-popup-menu" cdkMenu>
+      <button mat-menu-item (click)="editMessage()" cdkMenuItem>edit</button>
+      <button mat-menu-item (click)="deleteMessage()" cdkMenuItem>delete</button>
+    </div>
+  </ng-template>
+  
   <div class="message-input">
     <mat-form-field appearance="outline" class="input-field">
       <input matInput [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Type a message">

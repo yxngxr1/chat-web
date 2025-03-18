@@ -3,6 +3,7 @@ import { environment } from "../../environment";
 import { HttpClient } from "@angular/common/http";
 import { MessageDTO } from "../models/message.dto";
 import { Observable } from "rxjs";
+import { MessageUpdateRequest } from "../models/message.update.request";
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,11 @@ export class MessageService {
     return this.http.get<MessageDTO[]>(`${this.API_URL}/chat/${chatId}`);
   }
 
-  deleteMessage(chatId: number, msgId: number): Observable<string> {
-    return this.http.delete<string>(`${this.API_URL}/chat/${chatId}/msg/${msgId}`);
+  updateMessage(chatId: number, msgId: number, messageUpdateRequest: MessageUpdateRequest): Observable<MessageDTO> {
+    return this.http.put<MessageDTO>(`${this.API_URL}/chat/${chatId}/msg/${msgId}`, messageUpdateRequest);
+  }
+
+  deleteMessage(chatId: number, msgId: number): Observable<void> {
+    return this.http.delete<void>(`${this.API_URL}/chat/${chatId}/msg/${msgId}`);
   }
 }

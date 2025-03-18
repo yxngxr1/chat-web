@@ -1,5 +1,6 @@
 export interface CreateChatRequest {
-    name: string;
+    name?: string;
+    description?: string;
     userIds?: number[]; 
     chatType: 'PRIVATE' | 'GROUP' | 'SELF';
 }
