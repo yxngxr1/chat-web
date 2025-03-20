@@ -1,95 +1,102 @@
-import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
-import { LoginRequest } from "../models/login.request";
-import { JwtAuthenticationResponse } from "../models/jwt.response";
-import { environment } from "../../environment";
-import { UserService } from "./user.service";
+import { StorageService } from "./storage.service";
+import { ApiService } from "./api.service";
+import { LoginRequest, LoginResponse, UserDTO } from "../api";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private readonly API_URL = `${environment.apiUrl}/auth/login`;
+  private isAuthenticatedSubject: BehaviorSubject<boolean>;
+  isAuthenticated$: Observable<boolean>;
+
+  private currentUserSubject = new BehaviorSubject<UserDTO | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
   
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
-  isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-
   constructor(
-    private http: HttpClient,
     private router: Router,
-    private userService: UserService
-  ) {}
+    private storage: StorageService,
+    private api: ApiService
+  ) {
+    this.isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
+    this.isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  login(loginRequest: LoginRequest): Observable<JwtAuthenticationResponse> {
-    return this.http.post<JwtAuthenticationResponse>(this.API_URL, loginRequest)
-      .pipe(
-        tap(response => {
-          const decodedToken = this.decodeToken(response.accessToken); 
-          console.log('токен:', decodedToken);
-          this.setTokens(response.accessToken, response.refreshToken);
-          this.isAuthenticatedSubject.next(true);
-        })
-      );
+    console.log('AuthService created');
+    this.isAuthenticated$.subscribe((isAuth) => {
+      if (isAuth) this.getUser(); // Запрашиваем данные пользователя только при авторизации
+    });
+  }
+
+  login(jwt: LoginResponse): void {
+    const decodedToken = this.decodeToken(jwt.accessToken);
+    console.log('токен:', decodedToken);
+    this.setTokens(jwt.accessToken, jwt.refreshToken);
+    this.isAuthenticatedSubject.next(true);
+    this.router.navigate(['/']);
   }
 
   logout(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    this.clearTokens();
     this.isAuthenticatedSubject.next(false);
+    this.currentUserSubject.next(null);
     this.router.navigate(['/login']);
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return this.storage.getItem('accessToken');
   }
 
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    return this.storage.getItem('refreshToken');
+  }
+
+  private setTokens(accessToken: string, refreshToken: string): void {
+    this.storage.setItem('accessToken', accessToken);
+    this.storage.setItem('refreshToken', refreshToken);
+  }
+  
+  private clearTokens(): void {
+    this.storage.removeItem('accessToken');
+    this.storage.removeItem('refreshToken');
+  }
+
+  private hasToken(): boolean {
+    return !!this.getAccessToken();
   }
 
   isLoggedIn(): boolean {
     return this.hasToken();
   }
 
-  private setTokens(accessToken: string, refreshToken: string): void {
-    localStorage.setItem('accessToken', accessToken);
-    localStorage.setItem('refreshToken', refreshToken);
-  }
-
-  private hasToken(): boolean {
-    return !!localStorage.getItem('accessToken');
-  }
-
-  refreshToken(): Observable<JwtAuthenticationResponse> {
-    const refreshToken = this.getRefreshToken();
-    return this.http.post<JwtAuthenticationResponse>(
-      `${environment.apiUrl}/auth/refresh_token`, 
-      { refreshToken }
-    ).pipe(
-      tap(response => {
-        this.setTokens(response.accessToken, response.refreshToken);
-      })
-    );
-  }
-
   getUserId(): number {
     const token = this.getAccessToken();
     if (!token) {
       this.logout();
-      this.router.navigate(['/login']);
       throw new Error('Токен отсутствует, выполнен logout');
     }
 
     const decoded = this.decodeToken(token);
     if (!decoded?.id) {
       this.logout();
-      this.router.navigate(['/login']);
       throw new Error('ID пользователя не найден в токене, выполнен logout');
     }
 
-    return decoded.id; // Теперь всегда возвращаем number
+    return decoded.id;
+  }
+
+  getUser(): void {
+    const userId = this.getUserId();
+    if (userId) {
+      this.api.apiService.getUserById(userId).subscribe({
+        next: (user) => {
+          this.currentUserSubject.next(user);
+          console.log(`Получен юзер: ${this.currentUser$}`)
+        },
+        error: (error) => console.error('Error loading user info:', error)
+      })
+    }
   }
 
   private decodeToken(token: string): any {

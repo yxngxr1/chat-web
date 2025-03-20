@@ -1,0 +1,48 @@
+<div class="dialog-container">
+    <div class="header">
+        <h2 mat-dialog-title>Информация о чате
+            <button mat-icon-button (click)="toggleEditing()" class="edit-toggle">
+                <mat-icon>{{ isEditing ? 'close' : 'edit' }}</mat-icon>
+            </button>
+        </h2>
+    </div>
+    <mat-dialog-content>
+        
+        <mat-form-field appearance="outline">
+            <mat-label>Название</mat-label>
+            <input 
+                matInput 
+                [(ngModel)]="chat.name" 
+                [disabled]="!isEditing">
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+            <mat-label>Описание</mat-label>
+            <textarea
+                matInput 
+                [(ngModel)]="chat.description" 
+                [disabled]="!isEditing">
+            </textarea>
+        </mat-form-field>
+
+        <p><strong>Чат создан:</strong> {{ chat.createdAt | date:'short' }}</p>
+
+        <h3 class="title-users">Участники</h3>
+        <mat-list>
+            <mat-list-item matRipple *ngFor="let user of users">
+                <div class="userItem">
+                    <span>{{ user.username }}</span>
+                    <button mat-icon-button (click)="deleteUser(user)">
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </div>
+            </mat-list-item>
+        </mat-list>
+
+    </mat-dialog-content>
+
+    <mat-dialog-actions>
+        <button mat-button color="primary" *ngIf="isEditing" (click)="saveChanges()">Save</button>
+        <button mat-button mat-dialog-close>Close</button>
+    </mat-dialog-actions>
+</div>

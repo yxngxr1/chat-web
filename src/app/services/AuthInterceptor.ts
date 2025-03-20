@@ -3,29 +3,37 @@ import { HttpRequest, HttpHandlerFn, HttpEvent, HttpInterceptorFn } from '@angul
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { inject } from '@angular/core';
-import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
+import { StorageService } from './storage.service';
 
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<unknown>> => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const token = authService.getAccessToken();
+  const storage = inject(StorageService);
+  const token = storage.getItem('accessToken');
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
 
   if (token) {
-    request = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  request = request.clone({
+    setHeaders: headers
+  });
 
   return next(request).pipe(
     catchError((error) => {
-      if (error.status === 401 || error.status === 403) {
-        authService.logout();
+      if (error.status === 401) {
+        console.log('Не аутентифицирован');
+        
+      }
+      if (error.status === 403) {
+        console.log('Нет доступа');
       }
       return throwError(() => error);
     })

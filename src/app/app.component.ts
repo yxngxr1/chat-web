@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar'
-import { HeaderComponent } from './header/header.component';
+import { HeaderComponent } from './components/header/header.component';
 
 
 @Component({
@@ -10,10 +10,10 @@ import { HeaderComponent } from './header/header.component';
   imports: [
     RouterOutlet,
     MatToolbarModule,
-    HeaderComponent
+    HeaderComponent,
 ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
   title = 'chat-web';

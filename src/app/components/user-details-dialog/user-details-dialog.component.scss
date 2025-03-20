@@ -1,0 +1,39 @@
+.dialog-container {
+    width: 100%;
+}
+
+h2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.edit-toggle {
+    margin-left: auto;
+}
+
+mat-dialog-content {
+    padding-top: 10px !important;
+}
+
+mat-form-field {
+    width: 100% !important; 
+}
+
+mat-form-field input[disabled],
+mat-form-field textarea[disabled] {
+    color: var(--mdc-theme-text-primary-on-background);
+    -webkit-text-fill-color: var(--mdc-theme-text-primary-on-background); /* Для WebKit */
+}
+
+
+.title-chats {
+    text-align: center;
+    margin: 0px;
+}
+
+.userItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
