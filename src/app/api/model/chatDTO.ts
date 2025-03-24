@@ -26,8 +26,25 @@ export interface ChatDTO {
      */
     description: string;
     /**
+     * Создатель чата
+     */
+    creatorId: number;
+    /**
+     * Тип чата
+     */
+    type: ChatDTO.TypeEnum;
+    /**
      * Дата и время создания чата
      */
     createdAt: string;
 }
+export namespace ChatDTO {
+    export type TypeEnum = 'PRIVATE' | 'GROUP' | 'SELF';
+    export const TypeEnum = {
+        Private: 'PRIVATE' as TypeEnum,
+        Group: 'GROUP' as TypeEnum,
+        Self: 'SELF' as TypeEnum
+    };
+}
+
 

@@ -24,8 +24,7 @@ import { AuthService } from '../../services/auth.service';
     CommonModule,
     FormsModule,
     MatIconModule,
-    MatListModule,
-    MatRipple,
+    MatListModule
   ],
   templateUrl: './user-details-dialog.component.html',
   styleUrl: './user-details-dialog.component.scss'

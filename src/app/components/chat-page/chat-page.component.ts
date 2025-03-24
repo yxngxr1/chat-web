@@ -6,14 +6,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CreateChatDialogComponent } from '../create-chat-dialog/create-chat-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
+import { RouterOutlet } from '@angular/router';
+import { WebSocketService } from '../../services/WebSocket.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-chat-page',
   standalone: true,
   imports: [
+    RouterOutlet,
     MatSidenavModule,
     ChatListComponent,
-    ChatDialogComponent,
     MatButtonModule,
     MatDialogModule,
     MatIconModule
@@ -22,7 +25,22 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './chat-page.component.scss'
 })
 export class ChatPageComponent {
-  constructor(private dialog: MatDialog) {}
+  private curId: number | null = null;
+
+  constructor(
+    private dialog: MatDialog,
+    private wsService: WebSocketService,
+    private authService: AuthService,
+  ) {}
+
+  ngOnInit(): void {
+    this.curId = this.authService.getUserId();
+    if (this.curId !== null) {
+      this.wsService.connect(this.curId.toString());
+    } else {
+      console.error("curId is null");
+    }
+  }
 
   openPrivateChatDialog() {
     this.dialog.open(CreateChatDialogComponent, {

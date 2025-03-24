@@ -11,7 +11,10 @@ index.ts
 model/chatCreateRequest.ts
 model/chatDTO.ts
 model/chatUpdateRequest.ts
+model/chatUserCreateRequest.ts
 model/chatUserCreateResponse.ts
+model/chatUserDeleteRequest.ts
+model/chatUserDeleteResponse.ts
 model/loginRequest.ts
 model/loginResponse.ts
 model/messageCreateRequest.ts

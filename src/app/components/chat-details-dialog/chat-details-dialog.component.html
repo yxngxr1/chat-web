@@ -26,15 +26,23 @@
         </mat-form-field>
 
         <p><strong>Чат создан:</strong> {{ chat.createdAt | date:'short' }}</p>
+        <p><strong>Тип чата:</strong> {{ chat.type}}</p>
 
         <h3 class="title-users">Участники</h3>
         <mat-list>
             <mat-list-item matRipple *ngFor="let user of users">
                 <div class="userItem">
-                    <span>{{ user.username }}</span>
-                    <button mat-icon-button (click)="deleteUser(user)">
-                        <mat-icon>delete</mat-icon>
-                    </button>
+                    <div class="leftPart">
+                        <mat-icon>person</mat-icon>
+                        <span>{{ user.username }}</span>
+                    </div>
+
+                    <div class="rightPart">
+                        <mat-icon *ngIf="user.id === chat.creatorId">military_tech</mat-icon>
+                        <button mat-icon-button (click)="deleteUser(user)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
                 </div>
             </mat-list-item>
         </mat-list>

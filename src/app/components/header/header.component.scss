@@ -16,6 +16,27 @@ mat-toolbar {
   );
 }
 
+.profile-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-wrapper button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-label {
+  position: absolute;
+  bottom: -14px; /* Расстояние до подписи */
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
 .selected-theme {
   @include mat.menu-overrides(
     (

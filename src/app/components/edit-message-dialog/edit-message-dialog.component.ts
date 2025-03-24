@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { ChatDTO, MessageDTO, MessageUpdateRequest } from '../../api';
 import { ApiService } from '../../services/api.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-edit-message-dialog',
@@ -20,7 +21,7 @@ import { ApiService } from '../../services/api.service';
     MatCheckboxModule,
     CommonModule,
     FormsModule,
-    MatRipple
+    MatFormFieldModule,
   ],
   templateUrl: './edit-message-dialog.component.html',
   styleUrl: './edit-message-dialog.component.scss'

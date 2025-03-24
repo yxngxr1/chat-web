@@ -5,6 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { StorageService } from './storage.service';
+import { AuthService } from './auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (
   request: HttpRequest<unknown>,
@@ -30,10 +31,11 @@ export const authInterceptor: HttpInterceptorFn = (
     catchError((error) => {
       if (error.status === 401) {
         console.log('Не аутентифицирован');
-        
+        // authService.logout();
       }
       if (error.status === 403) {
         console.log('Нет доступа');
+        // authService.logout();
       }
       return throwError(() => error);
     })

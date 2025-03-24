@@ -9,6 +9,7 @@
 }
 
 .chat-header {
+  min-height: 2.5em;
   display: flex;
   align-items: center;
   padding: 10px;
@@ -30,32 +31,33 @@
   display: flex;
   align-items: flex-start;
   overflow-y: auto;
+  flex-direction: column-reverse; /* Инверсия направления */
+  scroll-behavior: smooth;
 }
 
 .messages {
-  width: 100%;
+  width: 100% !important;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 10px 10px;
 }
 
 mat-list-item {
   border-radius: 0.8em;
   padding: 0px 8px !important;
-  height: auto !important;
-  width: fit-content !important; /* Ширина зависит только от содержимого */
-  max-width: 80%;
-  min-width: 10%;
+  height: fit-content !important;
+  width: fit-content !important; 
+  max-width: 80% !important;
+  margin: 0px 10px;
   background: var(--mat-sys-surface-container-high);
 }
 
 mat-list-item.right-aligned {
-  align-self: flex-end; /* Привязывает элемент к правому краю внутри flex-контейнера .messages */
+  align-self: flex-end; 
 }
 
 .message-content {
-  
+  width: 100% !important;
 }
 
 .message-header {
@@ -71,6 +73,7 @@ mat-list-item.right-aligned {
 
 .message-text {
   text-wrap: wrap;
+  overflow-wrap: break-word;
 }
 
 .timestamp {

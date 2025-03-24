@@ -9,7 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatRipple } from '@angular/material/core';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
-import { ChatDTO, ChatUpdateRequest, UserDTO } from '../../api';
+import { ChatDTO, ChatUpdateRequest, ChatUserDeleteRequest, UserDTO } from '../../api';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -85,8 +85,13 @@ export class ChatDetailsDialogComponent {
     
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log("User: ", user.id, " leave from:", this.chat.id)
-        this.api.apiService.leaveUserFromChat(this.chat.id, user.id).subscribe({
+        
+        const delUsersRequest: ChatUserDeleteRequest = {
+          userIds: [user.id]
+        }
+        
+        console.log("User: ", delUsersRequest.userIds, " leave from:", this.chat.id)
+        this.api.apiService.leaveUserFromChat(this.chat.id, delUsersRequest).subscribe({
           next: () => {
             console.log(`Пользователь ${user.username} покинул чат`);
             this.users = this.users.filter(u => u.id !== user.id);

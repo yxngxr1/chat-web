@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable, SubscriptionLike } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,6 +18,8 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { ChatDTO, MessageCreateRequest, MessageDTO, UserDTO } from '../../api';
 import { ApiService } from '../../services/api.service';
 import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.component';
+import { MatFormFieldModule, MatHint } from '@angular/material/form-field';
+import { WebSocketService } from '../../services/WebSocket.service';
 
 @Component({
   selector: 'app-chat-dialog',
@@ -33,7 +35,10 @@ import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.co
     MatMenuModule,
     CdkContextMenuTrigger,
     CdkMenu, 
-    CdkMenuItem
+    CdkMenuItem,
+    FormsModule,
+    MatFormFieldModule,
+    MatHint
   ],
   templateUrl: './chat-dialog.component.html',
   styleUrl: './chat-dialog.component.scss'
@@ -45,34 +50,49 @@ export class ChatDialogComponent implements OnInit {
   chat: ChatDTO | null = null;
   users: UserDTO[] | null = null;
   usersMap: Map<number, UserDTO> = new Map();
-  messages$!: Observable<MessageDTO[]>; // Observable для сообщений
+  messages$ = new BehaviorSubject<MessageDTO[]>([]);
   selectedMessage: MessageDTO | null = null;
   newMessage = '';
   curId: number | null = null;
-  
+  private messageSub: SubscriptionLike | undefined;
+
   constructor(
     private route: ActivatedRoute,
     private authService: AuthService,
     private api: ApiService,
     private dialog: MatDialog,
     private router: Router,
+    private wsService: WebSocketService
   ) {}
 
   ngOnInit() {
+    this.curId = this.authService.getUserId();
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       this.chatId = id !== null ? +id : null;
       if (this.chatId !== null) {
         this.loadChatInfo();
         this.loadMessages();
+        this.subscribeMessages();
         this.loadUsers();
-      } else {
-        this.messages$ = new Observable(observer => observer.next([])); // Пустой Observable, если нет chatId
-      }
+      } 
     });
-    this.curId = this.authService.getUserId();
   }
 
+  private subscribeMessages() {
+    this.messageSub = this.wsService.getMessages().subscribe(message => {
+      if (message.chatId == this.chatId) {
+        const currentMessages = this.messages$.getValue();
+        this.messages$.next([...currentMessages, message]);
+      }
+    });
+  }
+
+  // ngOnDestroy() {
+  //   this.messageSub?.unsubscribe();
+  //   this.wsService.disconnect();
+  // }
+  
   private loadChatInfo() {
     if (this.chatId !== null) {
       this.api.apiService.getChatById(this.chatId).subscribe({
@@ -97,24 +117,21 @@ export class ChatDialogComponent implements OnInit {
   }
 
   sendMessage() {
-    if (this.newMessage.trim() && this.chatId !== null) {
-      const message: MessageCreateRequest = {
-        chatId: this.chatId,
-        content: this.newMessage
-      };
-      this.api.apiService.sendMessage(message).subscribe({
-        next: () => {
-          this.newMessage = '';
-          this.loadMessages(); 
-        },
-        error: (err) => console.error('Error sending message:', err)
-      });
-    }
+    const messagePayload = {
+      chatId: this.chatId,
+      senderId: this.curId,
+      content: this.newMessage
+    };
+    this.wsService.sendMessage('/app/chat', messagePayload);
+    this.newMessage = ''
   }
 
   private loadMessages() {
     if (this.chatId !== null) {
-      this.messages$ = this.api.apiService.getMessagesByChat(this.chatId);
+      this.api.apiService.getAllMessagesByChatId(this.chatId).subscribe({
+        next: (messages) => this.messages$.next(messages),
+        error: (err) => console.error('Ошибка при загрузке сообщений:', err)
+      });
     }
   }
 
@@ -164,15 +181,10 @@ export class ChatDialogComponent implements OnInit {
     const dialogRef = this.dialog.open(AddUsersDialogComponent, {
       data: { chat: this.chat }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log('added users:', result);
-        // TODO: отправить обновления на сервер
-      }
-    });
   }
 
-  setCurrentMessage(message: MessageDTO) {
+  setCurrentMessage(event: Event, message: MessageDTO) {
+    event.stopPropagation();
     this.selectedMessage = message;
   }
 
@@ -210,4 +222,9 @@ export class ChatDialogComponent implements OnInit {
       }
     });
   }
+
+  goToLink(url: string){
+    window.open(url, "_blank");
 }
+}
+

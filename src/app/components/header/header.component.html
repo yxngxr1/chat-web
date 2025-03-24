@@ -4,9 +4,12 @@
     <button mat-icon-button [mat-menu-trigger-for]="themeMenu">
         <mat-icon>{{ themeService.selectedTheme()?.icon }}</mat-icon>
     </button>
-    <button *ngIf="profile$ | async as profile" mat-icon-button (click)="openProfileDialog(profile)">
-        <mat-icon>account_circle</mat-icon>
-    </button>
+    <div class="profile-wrapper" *ngIf="profile$ | async as profile">
+        <button mat-icon-button (click)="openProfileDialog(profile)">
+            <mat-icon>account_circle</mat-icon>
+        </button>
+        <span class="profile-label">{{ profile.username }}</span>
+    </div>
     <button *ngIf="profile$ | async as profile" mat-icon-button (click)="logout()">
         <mat-icon>logout</mat-icon>
     </button>

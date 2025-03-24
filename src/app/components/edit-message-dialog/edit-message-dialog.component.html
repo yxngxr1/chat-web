@@ -3,7 +3,10 @@
     <mat-dialog-content>
         <mat-form-field appearance="outline">
             <mat-label>Название</mat-label>
-            <input matInput [(ngModel)]="message.content">
+            <textarea 
+                matInput 
+                [(ngModel)]="message.content">
+            </textarea>
         </mat-form-field>
     </mat-dialog-content>
     <mat-dialog-actions>

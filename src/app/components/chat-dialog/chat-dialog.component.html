@@ -1,4 +1,5 @@
-<div class="chat-container" *ngIf="chatId; else noChat">
+<div class="chat-container" 
+*ngIf="chatId; else noChat">
   <div class="chat-header"
     matRipple
     (click)="openChatDetails($event)">
@@ -11,13 +12,15 @@
       <button mat-icon-button (click)="openAddPerson($event)"><mat-icon>person_add</mat-icon></button>
     </div>
   </div>
-  <div class="messages-container">
+  <div class="messages-container"
+    ><!-- (click)="goToLink('https://xn--80aabtwbbuhbiqdxddn.xn--p1ai/')" -->
     <mat-list class="messages">
       <mat-list-item class="message-item" 
         *ngFor="let message of messages$ | async" 
         [ngClass]="{'right-aligned': message.senderId === curId}"
         [cdkContextMenuTriggerFor]="messageMenu"
-        (contextmenu)="setCurrentMessage(message)">
+        (contextmenu)="setCurrentMessage($event, message)"
+        (click)="setCurrentMessage($event, message)">
         <!-- <img [src]="message.avatarUrl || 'default-avatar.png'" class="message-avatar" alt="Avatar"> -->
         <div class="message-content">
           <div class="message-header">
@@ -39,7 +42,12 @@
   
   <div class="message-input">
     <mat-form-field appearance="outline" class="input-field">
-      <input matInput [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Type a message">
+      <input 
+      matInput 
+      [(ngModel)]="newMessage" 
+      (keyup.enter)="sendMessage()" 
+      placeholder="Type a message">
+      <mat-hint align="start">{{newMessage.length}} / 10000</mat-hint>
       <button mat-icon-button matSuffix (click)="sendMessage()">
         <mat-icon>send</mat-icon>
       </button>

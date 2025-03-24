@@ -37,3 +37,17 @@ mat-form-field textarea[disabled] {
     justify-content: space-between;
     align-items: center;
 }
+
+.leftPart {
+    display: flex;
+    align-items: center;
+
+    mat-icon {
+        margin-right: 8px;
+    }
+}
+
+.rightPart {
+    display: flex;
+    align-items: center;
+}

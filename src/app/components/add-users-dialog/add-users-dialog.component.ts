@@ -8,7 +8,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { UserWithSelection } from '../../models/user.selection';
-import { ChatDTO } from '../../api';
+import { ChatDTO, ChatUserCreateRequest } from '../../api';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -62,25 +62,24 @@ export class AddUsersDialogComponent {
   }
 
   toggleUserSelection(user: UserWithSelection) {
-    this.users.forEach(u => u.selected = (u === user)); // Для приватного чата выбираем только одного
-    this.filteredUsers = [...this.users]; // Обновляем отфильтрованный список
+    user.selected = !user.selected;
   }
 
   addPerson() {
     const selectedUsers = this.filteredUsers.filter(user => user.selected);
     if (selectedUsers.length > 0) {
-      console.log('Adding users to chat:', selectedUsers);
-  
-      // Перебираем всех выбранных пользователей и вызываем joinUserInChat для каждого
-      selectedUsers.forEach(user => {
-        this.api.apiService.joinUserInChat(this.data.chat.id, user.id).subscribe({
-          next: (response) => {
-            console.log(`User ${user.username} added to chat successfully.`);
-          },
-          error: (error) => {
-            console.error(`Error adding user ${user.username}:`, error);
-          }
-        });
+      const createUsersRequest: ChatUserCreateRequest = {
+        userIds: selectedUsers.map(user => user.id)
+      }
+      
+      console.log('Adding users to chat:', createUsersRequest.userIds);
+      this.api.apiService.joinUserInChat(this.data.chat.id, createUsersRequest).subscribe({
+        next: (response) => {
+          console.log(`Users ${response.userIds} added to chat successfully.`);
+        },
+        error: (error) => {
+          console.error(`Error adding users`, error);
+        }
       });
   
       this.dialogRef.close(selectedUsers);

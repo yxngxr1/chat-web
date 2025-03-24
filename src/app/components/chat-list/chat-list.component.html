@@ -4,6 +4,10 @@
     (click)="navigateToChat(chat.id)">
     <div class="chat-item">
       {{ chat.name }}
+      <div class="unread-count" *ngIf="chat.unreadCount && chat.unreadCount > 0">
+        <mat-icon>mark_unread_chat_alt</mat-icon>
+        <span>{{ chat.unreadCount }}</span>
+      </div>
     </div>
   </mat-list-item>
 </mat-list>

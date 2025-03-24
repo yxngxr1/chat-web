@@ -89,7 +89,7 @@ export class AuthService {
   getUser(): void {
     const userId = this.getUserId();
     if (userId) {
-      this.api.apiService.getUserById(userId).subscribe({
+      this.api.apiService.getMe().subscribe({
         next: (user) => {
           this.currentUserSubject.next(user);
           console.log(`Получен юзер: ${this.currentUser$}`)

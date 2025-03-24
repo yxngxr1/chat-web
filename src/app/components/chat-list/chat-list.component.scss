@@ -12,10 +12,31 @@ mat-list-item {
   &:hover {
     background: var(--mat-sys-surface-container-low); 
   }
+
+  @include mat.icon-overrides(
+    (
+      color: var(--mat-sys-primary),
+    )
+  );
+  
 }
 
 .chat-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   user-select: none;
+  width: 100%;
+}
+
+.unread-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--mat-sys-primary); 
+  font-weight: bold;
+
+  span {
+    font-size: 0.9rem;
+  }
 }
