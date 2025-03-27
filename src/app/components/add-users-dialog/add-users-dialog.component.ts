@@ -8,7 +8,7 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { UserWithSelection } from '../../models/user.selection';
-import { ChatDTO, ChatUserCreateRequest } from '../../api';
+import { ChatDTO, ChatUserCreateRequest, ChatUserCreateResponse } from '../../api';
 import { ApiService } from '../../services/api.service';
 
 @Component({
@@ -48,9 +48,6 @@ export class AddUsersDialogComponent {
           selected: false 
         })) as UserWithSelection[];
         this.filteredUsers = [...this.users];
-      },
-      error: (err) => {
-        console.error('Ошибка загрузки пользователей:', err);
       }
     });
   }
@@ -74,15 +71,12 @@ export class AddUsersDialogComponent {
       
       console.log('Adding users to chat:', createUsersRequest.userIds);
       this.api.apiService.joinUserInChat(this.data.chat.id, createUsersRequest).subscribe({
-        next: (response) => {
-          console.log(`Users ${response.userIds} added to chat successfully.`);
-        },
-        error: (error) => {
-          console.error(`Error adding users`, error);
+        next: (createUsersResponse: ChatUserCreateResponse) => {
+          console.log(`Users ${createUsersRequest.userIds} added to chat successfully.`);
+          this.dialogRef.close(createUsersResponse);
         }
       });
   
-      this.dialogRef.close(selectedUsers);
     } else {
       console.log('No users selected to add.');
     }

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ApiModule, LoginRequest, UserCreateRequest } from '../../api';
 import { ApiService } from '../../services/api.service';
+import { throwError } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -29,6 +30,9 @@ export class LoginComponent {
   loginRequest: LoginRequest = { username: '', password: '' };
   registrationRequest: UserCreateRequest = { username: '', email: '', password: ''};
 
+  loginError: string = '';
+  registrationError: string = '';
+
   constructor(
     private authService: AuthService,
     private api: ApiService,
@@ -41,7 +45,9 @@ export class LoginComponent {
         console.log(response);
         this.authService.login(response);
       },
-      error: (error) => console.error('Ошибка при логине:', error)
+      error: (error) => {
+        this.loginError = error.error || 'Registration failed.';
+      }
     });
   }
 
@@ -50,7 +56,9 @@ export class LoginComponent {
       next: (response) => {
         this.authService.login(response);
       },
-      error: (error) => console.error('Registration failed', error)
+      error: (error) => {
+        this.registrationError = error.error || 'Registration failed.';
+      }
     });
   }
 }

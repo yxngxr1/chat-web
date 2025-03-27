@@ -9,7 +9,7 @@ export interface AppTheme {
   providedIn: 'root',
 })
 export class ThemeService {
-  private appTheme = signal<'light' | 'dark' | 'system'>('system');
+  private appTheme = signal<'light' | 'dark' | 'system'>('light');
 
   private themes: AppTheme[] = [
     { name: 'light', icon: 'light_mode' },

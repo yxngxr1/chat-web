@@ -9,6 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterOutlet } from '@angular/router';
 import { WebSocketService } from '../../services/WebSocket.service';
 import { AuthService } from '../../services/auth.service';
+import { ChatDTO } from '../../api';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat-page',
@@ -31,28 +33,39 @@ export class ChatPageComponent {
     private dialog: MatDialog,
     private wsService: WebSocketService,
     private authService: AuthService,
+    private chatService: ChatService,
   ) {}
 
   ngOnInit(): void {
     this.curId = this.authService.getUserId();
     if (this.curId !== null) {
       this.wsService.connect(this.curId.toString());
-    } else {
-      console.error("curId is null");
-    }
+    } 
   }
 
   openPrivateChatDialog() {
-    this.dialog.open(CreateChatDialogComponent, {
+    const dialogRef = this.dialog.open(CreateChatDialogComponent, {
       data: { isGroup: false },
       width: '400px'
     });
+
+    dialogRef.afterClosed().subscribe((newChat: ChatDTO) => {
+      if (newChat) {
+        this.chatService.addChat(newChat);
+      }
+    })
   }
 
   openGroupChatDialog() {
-    this.dialog.open(CreateChatDialogComponent, {
+    const dialogRef = this.dialog.open(CreateChatDialogComponent, {
       data: { isGroup: true },
       width: '400px'
     });
+
+    dialogRef.afterClosed().subscribe((newChat: ChatDTO) => {
+      if (newChat) {
+        this.chatService.addChat(newChat);
+      }
+    })
   }
 }

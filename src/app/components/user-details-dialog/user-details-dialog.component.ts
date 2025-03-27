@@ -39,10 +39,9 @@ export class UserDetailsDialogComponent {
     public dialogRef: MatDialogRef<UserDetailsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { user: UserDTO },
     private api: ApiService,
-    private dialog: MatDialog,
     private authService: AuthService
   ) {
-    this.user = data.user;  
+    this.user = { ...data.user }  
     console.log(this.user.username)
   }
 
@@ -55,7 +54,7 @@ export class UserDetailsDialogComponent {
       const updateRequest: UserUpdateRequest = {
         username: this.user.username,
         email: this.user.email,
-        password: this.password
+        ...(this.password ? { password: this.password } : {})
       };
       this.isSaving = true;
   
@@ -63,11 +62,7 @@ export class UserDetailsDialogComponent {
         next: (jwtResponse) => {
           this.authService.login(jwtResponse)
           this.isSaving = false;
-          this.dialogRef.close(); 
-        },
-        error: (error) => {
-          this.isSaving = false;
-          console.error('Ошибка обновления пользователя:', error);
+          this.dialogRef.close(this.user); 
         }
       });
       

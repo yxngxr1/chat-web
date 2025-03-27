@@ -45,26 +45,31 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-          data: {
-            title: 'Выход',
-            message: 'Вы уверены, что хотите выйти из аккаунта?',
-            confirmText: 'Выйти',
-            cancelText: 'Отмена'
-          }
-        });
-        
-        dialogRef.afterClosed().subscribe(result => {
-          if (result) {
-            console.log("Выход из аккаунта")
-            this.authService.logout();
-          }
-        });
+      data: {
+        title: 'Выход',
+        message: 'Вы уверены, что хотите выйти из аккаунта?',
+        confirmText: 'Выйти',
+        cancelText: 'Отмена'
+      }
+    });
+    
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log("Выход из аккаунта")
+        this.authService.logout();
+      }
+    });
   }
 
   openProfileDialog(user: UserDTO) {
-    console.log(user.username)
     const dialogRef = this.dialog.open(UserDetailsDialogComponent, {
       data: { user: user }
+    });
+
+    dialogRef.afterClosed().subscribe((profile: UserDTO) => {
+      if (profile) {
+        this.authService.setUser(profile);
+      }
     });
   }
 }

@@ -20,6 +20,7 @@ import { ApiService } from '../../services/api.service';
 import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.component';
 import { MatFormFieldModule, MatHint } from '@angular/material/form-field';
 import { WebSocketService } from '../../services/WebSocket.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-chat-dialog',
@@ -62,7 +63,8 @@ export class ChatDialogComponent implements OnInit {
     private api: ApiService,
     private dialog: MatDialog,
     private router: Router,
-    private wsService: WebSocketService
+    private wsService: WebSocketService,
+    private chatService: ChatService,
   ) {}
 
   ngOnInit() {
@@ -81,25 +83,20 @@ export class ChatDialogComponent implements OnInit {
 
   private subscribeMessages() {
     this.messageSub = this.wsService.getMessages().subscribe(message => {
+      console.log(1);
       if (message.chatId == this.chatId) {
         const currentMessages = this.messages$.getValue();
         this.messages$.next([...currentMessages, message]);
       }
     });
   }
-
-  // ngOnDestroy() {
-  //   this.messageSub?.unsubscribe();
-  //   this.wsService.disconnect();
-  // }
   
   private loadChatInfo() {
     if (this.chatId !== null) {
       this.api.apiService.getChatById(this.chatId).subscribe({
         next: (chat) => {
           this.chat = chat;
-        },
-        error: (err) => console.error('Error loading chat info:', err)
+        }
       });
     }
   }
@@ -110,8 +107,7 @@ export class ChatDialogComponent implements OnInit {
         next: (users) => {
           this.users = users;
           this.usersMap = new Map(users.map(user => [user.id, user]));
-        },
-        error: (err) => console.error('Error loading users info:', err)
+        }
       })
     }
   }
@@ -129,13 +125,12 @@ export class ChatDialogComponent implements OnInit {
   private loadMessages() {
     if (this.chatId !== null) {
       this.api.apiService.getAllMessagesByChatId(this.chatId).subscribe({
-        next: (messages) => this.messages$.next(messages),
-        error: (err) => console.error('Ошибка при загрузке сообщений:', err)
+        next: (messages) => this.messages$.next(messages)
       });
     }
   }
 
-  onDeleteProject(event: Event) {
+  onDeleteChat(event: Event) {
     
     event.stopPropagation();
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
@@ -149,13 +144,15 @@ export class ChatDialogComponent implements OnInit {
     
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log("Delete project (from list)", this.chatId)
+        console.log("Delete Chat", this.chatId)
         if (this.chatId){
           this.api.apiService.deleteChat(this.chatId).subscribe({
             next: () => {
-              this.router.navigate(['/']);
-            },
-            error: (err) => console.error('Ошибка удаления чата:', err)
+              if (this.chatId){
+                this.chatService.deleteChat(this.chatId);
+                this.router.navigate(['/']); 
+              }
+            }
           });
         }
       }
@@ -170,8 +167,7 @@ export class ChatDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Updated chat:', result);
-        // TODO: отправить обновления на сервер
+        this.chat = { ...result };
       }
     });
   }
@@ -180,6 +176,12 @@ export class ChatDialogComponent implements OnInit {
     event.stopPropagation();
     const dialogRef = this.dialog.open(AddUsersDialogComponent, {
       data: { chat: this.chat }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadUsers();
+      }
     });
   }
 
@@ -194,6 +196,19 @@ export class ChatDialogComponent implements OnInit {
       data: {
         message: this.selectedMessage,
         chat: this.chat
+      },
+      width: '50%'
+    });
+
+    dialogRef.afterClosed().subscribe((updatedMessage: MessageDTO) => {
+      if (updatedMessage) {
+        const messages = this.messages$.getValue(); 
+        const index = messages.findIndex(msg => msg.id === updatedMessage.id);
+  
+        if (index !== -1) {
+          messages[index] = updatedMessage;
+          this.messages$.next([...messages]);
+        }
       }
     });
   }
@@ -214,9 +229,11 @@ export class ChatDialogComponent implements OnInit {
           
           this.api.apiService.deleteMessage(this.chatId, this.selectedMessage.id).subscribe({
             next: () => {
-              //
+              const messages = this.messages$.getValue();
+              const updatedMessages = messages.filter(msg => msg.id !== this.selectedMessage?.id);
+              this.messages$.next(updatedMessages);
+              console.log(`Message with ID ${this.selectedMessage?.id} deleted.`);
             },
-            error: (err) => console.error('Ошибка удаления сообщения:', err)
           });
         }
       }

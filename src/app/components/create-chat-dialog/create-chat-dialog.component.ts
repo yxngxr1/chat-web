@@ -49,9 +49,6 @@ export class CreateChatDialogComponent {
           selected: false 
         })) as UserWithSelection[];
         this.filteredUsers = [...this.users];
-      },
-      error: (err) => {
-        console.error('Ошибка загрузки пользователей:', err);
       }
     });
   }
@@ -83,10 +80,6 @@ export class CreateChatDialogComponent {
       next: (chat: ChatDTO) => {
         console.log('Чат создан:', chat);
         this.dialogRef.close(chat);
-      },
-      error: (err) => {
-        console.error('Ошибка:', err);
-        this.dialogRef.close(null);
       }
     });
   }

@@ -47,6 +47,7 @@
             </mat-list-item>
         </mat-list>
 
+        <mat-error *ngIf="errorMessage">{{ errorMessage }}</mat-error>
     </mat-dialog-content>
 
     <mat-dialog-actions>

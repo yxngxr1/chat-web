@@ -46,11 +46,8 @@ export class EditMessageDialogComponent {
 
     if (this.data.message.id){
       this.api.apiService.updateMessage(this.data.chat.id, this.data.message.id, messageUpdateRequest).subscribe({
-        next: (updatedChat) => {
-          this.dialogRef.close(updatedChat); 
-        },
-        error: (error) => {
-          console.error('Ошибка обновления чата:', error);
+        next: (updatedMessage: MessageDTO) => {
+          this.dialogRef.close(updatedMessage); 
         }
       });
     }

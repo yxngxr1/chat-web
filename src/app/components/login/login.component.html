@@ -26,6 +26,7 @@
               required>
           </mat-form-field>
 
+          <mat-error *ngIf="loginError">{{ loginError }}</mat-error>
           <button mat-raised-button color="primary" type="submit">Login</button>
         </form>
       </mat-tab>
@@ -64,6 +65,8 @@
               placeholder="Password"
               required>
           </mat-form-field>
+          
+          <mat-error *ngIf="registrationError">{{ registrationError }}</mat-error>
           <button mat-raised-button color="primary" type="submit">Register</button>
         </form>
       </mat-tab>

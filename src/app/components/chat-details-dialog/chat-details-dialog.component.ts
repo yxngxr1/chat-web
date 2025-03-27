@@ -35,6 +35,7 @@ export class ChatDetailsDialogComponent {
   users: UserDTO[];
   isEditing = false;
   isSaving = false;
+  errorMessage: string = '';
 
   constructor(
     public dialogRef: MatDialogRef<ChatDetailsDialogComponent>,
@@ -57,11 +58,12 @@ export class ChatDetailsDialogComponent {
     this.api.apiService.updateChat(this.chat.id, updateRequest).subscribe({
       next: (updatedChat) => {
         this.isSaving = false;
-        this.dialogRef.close(); 
+        this.dialogRef.close(updatedChat);
       },
       error: (error) => {
         this.isSaving = false;
-        console.error('Ошибка обновления чата:', error);
+        this.errorMessage = error.error;
+        // console.error('Ошибка обновления чата:', error);
       }
     });
     
@@ -95,9 +97,6 @@ export class ChatDetailsDialogComponent {
           next: () => {
             console.log(`Пользователь ${user.username} покинул чат`);
             this.users = this.users.filter(u => u.id !== user.id);
-          },
-          error: (error) => {
-            console.error('Ошибка при удалении пользователя из чата:', error);
           }
         });
       }

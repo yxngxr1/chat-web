@@ -23,7 +23,7 @@ export class AuthService {
     this.isAuthenticatedSubject = new BehaviorSubject<boolean>(this.hasToken());
     this.isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-    console.log('AuthService created');
+    // console.log('AuthService created');
     this.isAuthenticated$.subscribe((isAuth) => {
       if (isAuth) this.getUser(); // Запрашиваем данные пользователя только при авторизации
     });
@@ -31,7 +31,7 @@ export class AuthService {
 
   login(jwt: LoginResponse): void {
     const decodedToken = this.decodeToken(jwt.accessToken);
-    console.log('токен:', decodedToken);
+    // console.log('токен:', decodedToken);
     this.setTokens(jwt.accessToken, jwt.refreshToken);
     this.isAuthenticatedSubject.next(true);
     this.router.navigate(['/']);
@@ -92,11 +92,14 @@ export class AuthService {
       this.api.apiService.getMe().subscribe({
         next: (user) => {
           this.currentUserSubject.next(user);
-          console.log(`Получен юзер: ${this.currentUser$}`)
-        },
-        error: (error) => console.error('Error loading user info:', error)
+          // console.log(`Получен юзер: ${this.currentUser$}`)
+        }
       })
     }
+  }
+
+  setUser(user: UserDTO): void {
+    this.currentUserSubject.next(user);
   }
 
   private decodeToken(token: string): any {
