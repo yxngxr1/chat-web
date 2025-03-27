@@ -97,6 +97,16 @@ mat-list-item.right-aligned {
   width: 100%;
 }
 
+@keyframes errorFade {
+  0% { color: red; }    /* Исходный цвет */
+  50% { color: red; }
+  100% { color: black; }  /* Плавное исчезновение */
+}
+
+.error-hint {
+  animation: errorFade 0.1s ease-in-out;
+}
+
 .no-chat {
   text-align: center;
   color: var(--mat-sys-on-surface-variant);
@@ -104,5 +114,21 @@ mat-list-item.right-aligned {
 }
 
 .message-popup-menu {
-  background-color: var(--mat-sys-surface-container-low);
+  background-color: var(--mat-sys-surface-container-high);
+  border-radius: 24px; /* Закругление углов */
+  padding: 4px 0px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.message-popup-menu button {
+  border-radius: 24px; /* Закругление углов */
+
+  background: none !important; /* Убирает фоновую подсветку */
+  color: inherit !important; /* Оставляет стандартный цвет */
+}
+
+.message-popup-menu button:hover,
+.message-popup-menu button:focus {
+  background: none !important; /* Убирает фон при наведении */
+  color: inherit !important; /* Сохраняет цвет */
 }

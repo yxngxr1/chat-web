@@ -4,7 +4,7 @@
     matRipple
     (click)="openChatDetails($event)">
     <div class="chat-title">
-      {{ chat?.name || 'Loading...' }}
+      {{ chat?.name || 'Загрузка...' }}
     </div>
     <div class="chat-actions">
       <button mat-icon-button (click)="openChatDetails($event)"><mat-icon>edit</mat-icon></button>
@@ -35,10 +35,16 @@
 
   <ng-template #messageMenu>
     <div class="message-popup-menu" cdkMenu>
-      <button mat-menu-item (click)="editMessage()" cdkMenuItem>edit</button>
-      <button mat-menu-item (click)="deleteMessage()" cdkMenuItem>delete</button>
+      <button mat-menu-item (click)="editMessage()" >
+        <mat-icon>edit</mat-icon> Редактировать
+      </button>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="deleteMessage()" cdkMenuItem>
+        <mat-icon>delete</mat-icon> Удалить
+      </button>
     </div>
   </ng-template>
+  
   
   <div class="message-input">
     <mat-form-field appearance="outline" class="input-field">
@@ -47,7 +53,7 @@
       [(ngModel)]="newMessage" 
       (keyup.enter)="sendMessage()" 
       placeholder="Type a message">
-      <mat-hint align="start">{{newMessage.length}} / 10000</mat-hint>
+      <mat-hint align="start" [ngClass]="{ 'error-hint': showErrorHint }">{{newMessage.length || 0}} / 10000</mat-hint>
       <button mat-icon-button matSuffix (click)="sendMessage()">
         <mat-icon>send</mat-icon>
       </button>
@@ -55,5 +61,5 @@
   </div>
 </div>
 <ng-template #noChat>
-  <p class="no-chat">Select a chat to start messaging</p>
+  <p class="no-chat">Выберете чат для начала общения</p>
 </ng-template>

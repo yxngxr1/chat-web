@@ -6,9 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatRippleModule } from '@angular/material/core';
 import { BehaviorSubject, Observable, Subscription, SubscriptionLike } from 'rxjs';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
-import { ChatDTO } from '../../api';
-import { ApiService } from '../../services/api.service';
-import { WebSocketService } from '../../services/WebSocket.service';
 import { ChatUnreadDto } from '../../models/chat.unread';
 import { ChatService } from '../../services/chat.service';
 

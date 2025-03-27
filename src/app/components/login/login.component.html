@@ -6,7 +6,7 @@
       <mat-tab label="Login">
         <form (ngSubmit)="onLoginSubmit()">
           <mat-form-field appearance="fill">
-            <mat-label>Username</mat-label>
+            <mat-label>Ник</mat-label>
             <input 
               matInput
               [(ngModel)]="loginRequest.username" 
@@ -16,7 +16,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Password</mat-label>
+            <mat-label>Пароль</mat-label>
             <input 
               matInput
               type="password" 
@@ -27,7 +27,7 @@
           </mat-form-field>
 
           <mat-error *ngIf="loginError">{{ loginError }}</mat-error>
-          <button mat-raised-button color="primary" type="submit">Login</button>
+          <button mat-raised-button color="primary" type="submit">Войти</button>
         </form>
       </mat-tab>
 
@@ -35,7 +35,7 @@
       <mat-tab label="Register">
         <form (ngSubmit)="onRegisterSubmit()">
           <mat-form-field appearance="fill">
-            <mat-label>Username</mat-label>
+            <mat-label>Ник</mat-label>
             <input 
               matInput
               [(ngModel)]="registrationRequest.username" 
@@ -45,7 +45,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Email</mat-label>
+            <mat-label>Почта</mat-label>
             <input 
               matInput
               type="email"
@@ -56,7 +56,7 @@
           </mat-form-field>
 
           <mat-form-field appearance="fill">
-            <mat-label>Password</mat-label>
+            <mat-label>Пароль</mat-label>
             <input 
               matInput
               type="password" 
@@ -67,7 +67,7 @@
           </mat-form-field>
           
           <mat-error *ngIf="registrationError">{{ registrationError }}</mat-error>
-          <button mat-raised-button color="primary" type="submit">Register</button>
+          <button mat-raised-button color="primary" type="submit">Создать аккаунт</button>
         </form>
       </mat-tab>
     </mat-tab-group>

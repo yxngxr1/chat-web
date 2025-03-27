@@ -39,7 +39,7 @@ export class ChatPageComponent {
   ngOnInit(): void {
     this.curId = this.authService.getUserId();
     if (this.curId !== null) {
-      this.wsService.connect(this.curId.toString());
+      this.wsService.connect(this.curId);
     } 
   }
 

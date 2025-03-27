@@ -29,12 +29,14 @@ export class WebSocketService {
     }
   }
 
-  connect(userId: string) {
+  connect(userId: number) {
     
     this.loadToken();
 
     const socket = new SockJS(`${environment.apiUrl}/ws`);
     this.stompClient = Stomp.over(socket);
+
+    this.stompClient.debug = function () {}; // отключение логирования (убрать для появления)
 
     this.stompClient.connect(
       {
@@ -42,19 +44,35 @@ export class WebSocketService {
       }, () => {
       console.log('Connected to WebSocket');
       this.stompClient?.subscribe(`/user/${userId}/queue/messages`, (message) => {
-        const receivedMessage: MessageDTO = JSON.parse(message.body);
-        this.messageSubject.next(receivedMessage);
-        // console.log(receivedMessage);
-
-        if (receivedMessage.senderId !== Number(userId)) {
-            this.snackBar.open(`${receivedMessage.senderId}: ${receivedMessage.content}`, 'Закрыть', {
-            duration: 3000, 
-            verticalPosition: 'top', 
-            horizontalPosition: 'center'
-          });
-        }
+        this.handleIncomingMessage(message, userId);
       });
     });
+  }
+
+  private handleIncomingMessage(message: any, userId: number): void {
+    const receivedData = JSON.parse(message.body);
+
+    if (receivedData.error) {
+        console.error("Ошибка от сервера:", receivedData.error);
+        this.snackBar.open(`${receivedData.error}`, 'Закрыть', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+        });
+        return;
+    }
+
+    const receivedMessage: MessageDTO = receivedData;
+    this.messageSubject.next(receivedMessage);
+    console.log(receivedMessage);
+
+    if (receivedMessage.senderId !== Number(userId)) {
+        this.snackBar.open(`${receivedMessage.senderId}: ${receivedMessage.content}`, 'Закрыть', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center'
+        });
+    }
   }
 
   disconnect() {

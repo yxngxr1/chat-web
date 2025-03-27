@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { BehaviorSubject, Observable, SubscriptionLike } from 'rxjs';
+import { BehaviorSubject, Observable, Subscription, SubscriptionLike } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -21,6 +21,7 @@ import { AddUsersDialogComponent } from '../add-users-dialog/add-users-dialog.co
 import { MatFormFieldModule, MatHint } from '@angular/material/form-field';
 import { WebSocketService } from '../../services/WebSocket.service';
 import { ChatService } from '../../services/chat.service';
+import { MessageService } from '../../services/message.service';
 
 @Component({
   selector: 'app-chat-dialog',
@@ -52,10 +53,11 @@ export class ChatDialogComponent implements OnInit {
   users: UserDTO[] | null = null;
   usersMap: Map<number, UserDTO> = new Map();
   messages$ = new BehaviorSubject<MessageDTO[]>([]);
+  private messageSubscription: Subscription | null = null;
   selectedMessage: MessageDTO | null = null;
   newMessage = '';
   curId: number | null = null;
-  private messageSub: SubscriptionLike | undefined;
+  showErrorHint = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -65,6 +67,7 @@ export class ChatDialogComponent implements OnInit {
     private router: Router,
     private wsService: WebSocketService,
     private chatService: ChatService,
+    private messageService: MessageService,
   ) {}
 
   ngOnInit() {
@@ -75,22 +78,29 @@ export class ChatDialogComponent implements OnInit {
       if (this.chatId !== null) {
         this.loadChatInfo();
         this.loadMessages();
-        this.subscribeMessages();
         this.loadUsers();
+        this.subscribeMessages();
       } 
     });
   }
 
   private subscribeMessages() {
-    this.messageSub = this.wsService.getMessages().subscribe(message => {
-      console.log(1);
-      if (message.chatId == this.chatId) {
+    if (this.messageSubscription) {
+      this.messageSubscription.unsubscribe();
+    }
+
+    this.messageSubscription = this.messageService.newMessage$.subscribe(message => {
+      if (message.chatId === this.chatId) {
         const currentMessages = this.messages$.getValue();
         this.messages$.next([...currentMessages, message]);
       }
     });
   }
-  
+
+  ngOnDestroy() {
+    this.messageSubscription?.unsubscribe();
+  }
+
   private loadChatInfo() {
     if (this.chatId !== null) {
       this.api.apiService.getChatById(this.chatId).subscribe({
@@ -113,6 +123,14 @@ export class ChatDialogComponent implements OnInit {
   }
 
   sendMessage() {
+    if (!this.newMessage || this.newMessage.trim().length === 0) {
+      this.showErrorHint = true;
+      setTimeout(() => {
+        this.showErrorHint = false;
+      }, 100); // Подсветка пропадёт через 2 секунды
+      return;
+    }
+
     const messagePayload = {
       chatId: this.chatId,
       senderId: this.curId,
