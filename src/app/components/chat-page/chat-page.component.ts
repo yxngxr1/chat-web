@@ -43,6 +43,10 @@ export class ChatPageComponent {
     } 
   }
 
+  ngOnDestroy(): void {
+    this.wsService.disconnect();
+  }
+
   openPrivateChatDialog() {
     const dialogRef = this.dialog.open(CreateChatDialogComponent, {
       data: { isGroup: false },

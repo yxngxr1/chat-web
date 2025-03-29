@@ -53,7 +53,7 @@ export class ChatDialogComponent implements OnInit {
   users: UserDTO[] | null = null;
   usersMap: Map<number, UserDTO> = new Map();
   messages$ = new BehaviorSubject<MessageDTO[]>([]);
-  private messageSubscription: Subscription | null = null;
+  messageSubscription: Subscription | null = null;
   selectedMessage: MessageDTO | null = null;
   newMessage = '';
   curId: number | null = null;
@@ -74,21 +74,20 @@ export class ChatDialogComponent implements OnInit {
     this.curId = this.authService.getUserId();
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
+      
       this.chatId = id !== null ? +id : null;
       if (this.chatId !== null) {
         this.loadChatInfo();
         this.loadMessages();
         this.loadUsers();
-        this.subscribeMessages();
       } 
     });
+
+    this.subscribeToMessages();
   }
-
-  private subscribeMessages() {
-    if (this.messageSubscription) {
-      this.messageSubscription.unsubscribe();
-    }
-
+  
+  private subscribeToMessages() {
+    console.log("Подписался на сообщения");
     this.messageSubscription = this.messageService.newMessage$.subscribe(message => {
       if (message.chatId === this.chatId) {
         const currentMessages = this.messages$.getValue();
