@@ -8,12 +8,13 @@
     </div>
     <div class="chat-actions">
       <button mat-icon-button (click)="openChatDetails($event)"><mat-icon>edit</mat-icon></button>
-      <button mat-icon-button (click)="onDeleteChat($event)"><mat-icon>delete</mat-icon></button>
-      <button mat-icon-button (click)="openAddPerson($event)"><mat-icon>person_add</mat-icon></button>
+      <button *ngIf="chat?.creatorId === curId" mat-icon-button (click)="onDeleteChat($event)"><mat-icon>delete</mat-icon></button>
+      <button *ngIf="chat?.type === 'GROUP'" mat-icon-button (click)="openAddPerson($event)"><mat-icon>person_add</mat-icon></button>
     </div>
   </div>
   <div class="messages-container"
     ><!-- (click)="goToLink('https://xn--80aabtwbbuhbiqdxddn.xn--p1ai/')" -->
+
     <mat-list class="messages">
       <mat-list-item class="message-item" 
         *ngFor="let message of messages$ | async" 
@@ -25,12 +26,15 @@
         <div class="message-content">
           <div class="message-header">
             <strong>{{ usersMap.get(message.senderId)?.username ?? 'unknown' }}</strong>
-            <span class="timestamp">{{ message.sentAt | date:'HH:mm' : 'ru' }}</span>
+            <span class="timestamp">{{ message.sentAt | date:'dd.MM.YYYY | HH:mm:ss' : 'ru' }}</span>
           </div>
           <span class="message-text">{{ message.content }}</span>
         </div>
       </mat-list-item>
     </mat-list>
+
+    <button mat-button class="load-more-btn" (click)="loadMoreMessages()">Загрузить ещё</button>
+
   </div>
 
   <ng-template #messageMenu>

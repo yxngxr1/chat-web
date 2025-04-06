@@ -35,10 +35,16 @@
   scroll-behavior: smooth;
 }
 
+.load-more-btn {
+  align-self: center; /* центрирование в флексе */
+  margin: 8px 0;
+  padding: 10px 20px;
+}
+
 .messages {
   width: 100% !important;
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   gap: 10px;
 }
 

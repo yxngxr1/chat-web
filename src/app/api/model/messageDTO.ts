@@ -33,5 +33,9 @@ export interface MessageDTO {
      * Дата и время отправки сообщения
      */
     sentAt: string;
+    /**
+     * Дата и время изменения сообщения
+     */
+    updateAt: string;
 }
 

@@ -10,7 +10,10 @@ import { UserWithSelection } from '../../models/user.selection';
 import { MatRipple } from '@angular/material/core';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
-import { ChatCreateRequest, ChatDTO } from '../../api';
+import { ChatCreateRequest, ChatDTO, UserDTO } from '../../api';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-create-chat-dialog',
@@ -22,57 +25,53 @@ import { ChatCreateRequest, ChatDTO } from '../../api';
     MatCheckboxModule,
     CommonModule,
     FormsModule,
-    MatRipple
+    MatRipple,
+    MatIconModule,
+    MatCardModule
   ],
   templateUrl: './create-chat-dialog.component.html',
   styleUrl: './create-chat-dialog.component.scss'
 })
 export class CreateChatDialogComponent {
   searchQuery = '';
-  users: UserWithSelection[] = [];
-  filteredUsers: UserWithSelection[] = [];
+  users: UserDTO[] = [];
+  selectedUsers: UserDTO[] = [];
+  isGroup?: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<CreateChatDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { isGroup: boolean },
     private api: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {
+    this.isGroup = data.isGroup;
     this.loadUsers();
   }
 
-  private loadUsers(): void {
-    this.api.apiService.getAllUsers().subscribe({
+  loadUsers(): void {
+    this.api.apiService.searchUsers(this.searchQuery).subscribe({
       next: (users) => {
         this.users = users.map(user => ({
-          ...user,
-          selected: false 
-        })) as UserWithSelection[];
-        this.filteredUsers = [...this.users];
+          ...user
+        }));
       }
     });
   }
 
-  filterUsers() {
-    this.filteredUsers = this.users.filter(user =>
-      user.username.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-  }
-
   createChat() {
-    const selectedUsers = this.users.filter(user => user.selected);
-    // if (!selectedUsers.length) {
-    //   console.warn('Выберите хотя бы одного пользователя');
-    //   return;
-    // }
+    if (!this.selectedUsers.length) {
+      console.warn('Выберите хотя бы одного пользователя');
+      return;
+    }
     
     let chatType: 'PRIVATE' | 'GROUP' | 'SELF' = this.data.isGroup ? 'GROUP' : 'PRIVATE';
-    if (!this.data.isGroup && selectedUsers.length === 1 && selectedUsers[0].id === Number(this.authService.getUserId())) {
+    if (!this.data.isGroup && this.selectedUsers.length === 1 && this.selectedUsers[0].id === Number(this.authService.getUserId())) {
       chatType = 'SELF'; 
     }
 
     const createChatRequest: ChatCreateRequest = {
-      userIds: selectedUsers.map(user => user.id),
+      userIds: this.selectedUsers.map(user => user.id),
       chatType: chatType
     };
   
@@ -84,12 +83,26 @@ export class CreateChatDialogComponent {
     });
   }
 
-  toggleUserSelection(user: UserWithSelection) {
-    if (this.data.isGroup) {
-      user.selected = !user.selected; // Переключаем выбор только для группового чата
-    } else {
-      this.users.forEach(u => u.selected = (u === user)); // Для приватного чата выбираем только одного
-      this.filteredUsers = [...this.users]; // Обновляем отфильтрованный список
+  removeUserFromSelection(user: UserDTO) {
+    const index = this.selectedUsers.indexOf(user);
+    if (index > -1) {
+      this.selectedUsers.splice(index, 1);
+    }
+  }
+
+  addUserToSelection(user: UserDTO) {
+    if (!this.isGroup && this.selectedUsers.length === 1) {
+      return
+    }
+
+    if (!this.selectedUsers.includes(user)) {
+      this.selectedUsers.push(user);
+    }
+    else {
+      this.snackBar.open('Пользователь уже выбран', 'Закрыть', {
+        duration: 500, 
+        verticalPosition: 'top',
+      });
     }
   }
 }

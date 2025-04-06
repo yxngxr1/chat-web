@@ -1,4 +1,7 @@
 <mat-toolbar>
+    <button *ngIf="!showSidebarButton" mat-icon-button (click)="openSidenav()">
+        <mat-icon>menu</mat-icon>
+    </button>
     ВТелеграмме
     <div class="flex-stretch"></div>
     <button mat-icon-button [mat-menu-trigger-for]="themeMenu">

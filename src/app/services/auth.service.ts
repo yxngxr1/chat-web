@@ -93,6 +93,10 @@ export class AuthService {
         next: (user) => {
           this.currentUserSubject.next(user);
           // console.log(`Получен юзер: ${this.currentUser$}`)
+        },
+        error: (error) => {
+          console.log("123");
+          this.logout();
         }
       })
     }

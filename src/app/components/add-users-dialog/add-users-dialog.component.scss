@@ -2,6 +2,25 @@
     width: 100%;
 }
 
+mat-card-content {
+    padding: 0.5em 0.5em !important;
+}
+
+.selected-users-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+
+.selected-user-item {
+    height: auto;               /* Устанавливает автоматическую высоту, чтобы она не превышала минимальный размер */
+    width: auto;                /* Устанавливает автоматическую ширину, чтобы она не превышала минимальный размер */
+    padding: 0.5px 0.5em;
+}
+
 mat-dialog-content {
     width: 100% !important;
 }

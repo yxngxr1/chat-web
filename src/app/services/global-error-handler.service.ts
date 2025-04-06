@@ -39,7 +39,6 @@ export class GlobalErrorHandler implements ErrorHandler {
         case 401:
             this.showSnackbar(snackBar, error.error || 'Не аутентифицирован. Войдите в аккаунт');
             authService.logout();
-            router.navigate(['/login']);
             break;
         case 403:
             this.showSnackbar(snackBar, error.error || 'Нет доступа');

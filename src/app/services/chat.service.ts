@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiService } from './api.service'; // Сервис для API-запросов
-import { ChatDTO } from '../api';
+import { ChatDTO, UserDTO } from '../api';
 import { ChatUnreadDto } from '../models/chat.unread';
 import { WebSocketService } from './WebSocket.service';
 
@@ -30,6 +30,10 @@ export class ChatService {
       });
   }
 
+  loadChat(chatId: number): Observable<ChatDTO> {
+    return this.api.apiService.getChatById(chatId);
+  }
+
   addChat(newChat: ChatDTO): void {
     const currentChats = this.chatsSubject.getValue();
     this.chatsSubject.next([newChat, ...currentChats]); 
@@ -47,6 +51,17 @@ export class ChatService {
 
   private subscribeToMessages() {
     this.wsService.getMessages().subscribe(message => {
+      const currentChats = this.chatsSubject.getValue();
+      const chatExists = currentChats.some(chat => chat.id === message.chatId);
+  
+      if (!chatExists) {
+        this.loadChat(message.chatId).subscribe({
+          next: (chat) => {
+            this.addChat(chat);
+          }
+        });
+      }
+
       this.updateUnreadCount(message.chatId);
     });
   }

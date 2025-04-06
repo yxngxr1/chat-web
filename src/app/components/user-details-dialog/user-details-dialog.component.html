@@ -41,7 +41,7 @@
                 [disabled]="!isEditing">
         </mat-form-field>
 
-        <p><strong>Аккаунт создан:</strong> {{ user.createdAt | date:'short' }}</p>
+        <p><strong>Аккаунт создан:</strong> {{ user.createdAt | date:'dd.MM.YYYY | HH:mm:ss' : 'ru'  }}</p>
 
         <!-- <h3 class="title-chats">Мои чаты</h3>
         <mat-list>

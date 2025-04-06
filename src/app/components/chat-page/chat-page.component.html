@@ -1,6 +1,6 @@
 <mat-sidenav-container>
   
-  <mat-sidenav mode="side" opened>
+  <mat-sidenav #sidenav [mode]="sidenavMode" [opened]="sidenavOpened" (closedStart)="sidenavOpened = false">
     <div class="chat-controls">
       <button mat-flat-button color="accent" (click)="openPrivateChatDialog()">Начать диалог</button>
       <button mat-flat-button color="accent" (click)="openGroupChatDialog()">Новый чат</button>

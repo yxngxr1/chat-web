@@ -12,6 +12,10 @@ import { UserDetailsDialogComponent } from '../user-details-dialog/user-details-
 import { MatButtonModule } from '@angular/material/button';
 import { UserDTO } from '../../api';
 import { ApiService } from '../../services/api.service';
+import { ChatPageComponent } from '../chat-page/chat-page.component';
+import { MatSidenav } from '@angular/material/sidenav';
+import { HeaderStateService } from '../../services/header-state.service';
+import { SidenavService } from '../../services/sidenav.service';
 
 
 @Component({
@@ -29,18 +33,24 @@ import { ApiService } from '../../services/api.service';
   styleUrl: './header.component.scss'
 })
 export class HeaderComponent implements OnInit {
-
+  showSidebarButton = false;
   profile$!: Observable<UserDTO | null>;
 
   constructor(
     public themeService: ThemeService, 
     private authService: AuthService, 
-    private api: ApiService,
     private dialog: MatDialog,
+    private headerStateService: HeaderStateService,
+    private sidenavService: SidenavService
   ) {}
 
   ngOnInit(): void {
     this.profile$ = this.authService.currentUser$;
+
+    // подписка на кнопку для выдвижения чатов
+    this.headerStateService.showSidebarButton$.subscribe(show => {
+      this.showSidebarButton = show;
+    });
   }
 
   logout() {
@@ -71,5 +81,9 @@ export class HeaderComponent implements OnInit {
         this.authService.setUser(profile);
       }
     });
+  }
+
+  openSidenav() {
+    this.sidenavService.toggleSidenav(); 
   }
 }

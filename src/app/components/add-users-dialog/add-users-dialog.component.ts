@@ -8,8 +8,10 @@ import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/materia
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { UserWithSelection } from '../../models/user.selection';
-import { ChatDTO, ChatUserCreateRequest, ChatUserCreateResponse } from '../../api';
+import { ChatDTO, ChatUserCreateRequest, ChatUserCreateResponse, UserDTO } from '../../api';
 import { ApiService } from '../../services/api.service';
+import { MatCardModule } from '@angular/material/card';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-add-users-dialog',
@@ -21,7 +23,9 @@ import { ApiService } from '../../services/api.service';
     MatCheckboxModule,
     CommonModule,
     FormsModule,
-    MatRipple
+    MatRipple,
+    MatCardModule,
+
   ],
   templateUrl: './add-users-dialog.component.html',
   styleUrl: './add-users-dialog.component.scss'
@@ -29,33 +33,26 @@ import { ApiService } from '../../services/api.service';
 export class AddUsersDialogComponent {
 
   searchQuery = '';
-  users: UserWithSelection[] = [];
-  filteredUsers: UserWithSelection[] = [];
+  users: UserDTO[] = [];
+  selectedUsers: UserDTO[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<AddUsersDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { chat: ChatDTO },
     private api: ApiService,
+    private snackBar: MatSnackBar
   ) {
     this.loadUsers();
   }
 
-  private loadUsers(): void {
-    this.api.apiService.getAllUsers().subscribe({
+  loadUsers(): void {
+    this.api.apiService.searchUsers(this.searchQuery).subscribe({
       next: (users) => {
         this.users = users.map(user => ({
-          ...user,
-          selected: false 
-        })) as UserWithSelection[];
-        this.filteredUsers = [...this.users];
+          ...user
+        }));
       }
     });
-  }
-  
-  filterUsers() {
-    this.filteredUsers = this.users.filter(user =>
-      user.username.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
   }
 
   toggleUserSelection(user: UserWithSelection) {
@@ -63,10 +60,9 @@ export class AddUsersDialogComponent {
   }
 
   addPerson() {
-    const selectedUsers = this.filteredUsers.filter(user => user.selected);
-    if (selectedUsers.length > 0) {
+    if (this.selectedUsers.length > 0) {
       const createUsersRequest: ChatUserCreateRequest = {
-        userIds: selectedUsers.map(user => user.id)
+        userIds: this.selectedUsers.map(user => user.id)
       }
       
       console.log('Adding users to chat:', createUsersRequest.userIds);
@@ -81,5 +77,23 @@ export class AddUsersDialogComponent {
       console.log('No users selected to add.');
     }
   }
-  
+
+  removeUserFromSelection(user: UserDTO) {
+    const index = this.selectedUsers.indexOf(user);
+    if (index > -1) {
+      this.selectedUsers.splice(index, 1);
+    }
+  }
+
+  addUserToSelection(user: UserDTO) {
+    if (!this.selectedUsers.includes(user)) {
+      this.selectedUsers.push(user);
+    }
+    else {
+      this.snackBar.open('Пользователь уже выбран', 'Закрыть', {
+        duration: 500, 
+        verticalPosition: 'top',
+      });
+    }
+  }
 }

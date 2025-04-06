@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { BehaviorSubject, Observable, Subscription, SubscriptionLike } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable, of, Subscription, SubscriptionLike } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
@@ -77,21 +77,42 @@ export class ChatDialogComponent implements OnInit {
       
       this.chatId = id !== null ? +id : null;
       if (this.chatId !== null) {
-        this.loadChatInfo();
-        this.loadMessages();
-        this.loadUsers();
-      } 
+        // Загружаем все данные параллельно
+        forkJoin({
+          chatInfo: this.loadChatInfo(),
+          messages: this.loadMessages(),
+          users: this.loadUsers()
+        }).subscribe({
+          next: (response) => {
+            // Доступ к данным по ключам
+            this.chat = response.chatInfo;
+            this.users = response.users;
+            this.usersMap = new Map(response.users.map(user => [user.id, user]));
+            this.messages$.next(response.messages); // сохраняем сообщения в subjects
+            console.log('Chat Info:', response.chatInfo);
+            console.log('Messages:', response.messages);
+            console.log('Users:', response.users);
+          },
+          error: (error) => {
+            // Обработка ошибок
+            console.error('Ошибка при загрузке данных:', error);
+          },
+          complete: () => {
+            console.log('Загрузка завершена');
+          }
+        });
+      }
     });
-
     this.subscribeToMessages();
   }
+
   
   private subscribeToMessages() {
     console.log("Подписался на сообщения");
     this.messageSubscription = this.messageService.newMessage$.subscribe(message => {
       if (message.chatId === this.chatId) {
         const currentMessages = this.messages$.getValue();
-        this.messages$.next([...currentMessages, message]);
+        this.messages$.next([message, ...currentMessages]);
       }
     });
   }
@@ -100,25 +121,43 @@ export class ChatDialogComponent implements OnInit {
     this.messageSubscription?.unsubscribe();
   }
 
-  private loadChatInfo() {
+  private loadMessages() {
     if (this.chatId !== null) {
-      this.api.apiService.getChatById(this.chatId).subscribe({
-        next: (chat) => {
-          this.chat = chat;
-        }
+      return this.api.apiService.getMessagesBefore(this.chatId); // возвращаем Observable
+    }
+    return of([]); // возвращаем пустой Observable, если chatId не задан
+  }
+
+  loadMoreMessages() {
+    const currentMessages = this.messages$.getValue();
+    
+    // Если уже есть сообщения — берём дату самого раннего
+    const oldestMessage = currentMessages.length > 0
+      ? currentMessages.reduce((min, m) => m.sentAt < min.sentAt ? m : min, currentMessages[0])
+      : null;
+  
+    const beforeTime: string | undefined = oldestMessage?.sentAt;
+
+    if (this.chatId !== null) {
+      this.api.apiService.getMessagesBefore(this.chatId, beforeTime).subscribe((newMessages) => {
+        const updatedMessages = [...currentMessages, ...newMessages];
+        this.messages$.next(updatedMessages);
       });
     }
   }
 
+  private loadChatInfo() {
+    if (this.chatId !== null) {
+      return this.api.apiService.getChatById(this.chatId); // возвращаем Observable
+    }
+    return of(null);
+  }
+
   private loadUsers() {
     if (this.chatId !== null) {
-      this.api.apiService.getUsersByChatId(this.chatId).subscribe({
-        next: (users) => {
-          this.users = users;
-          this.usersMap = new Map(users.map(user => [user.id, user]));
-        }
-      })
+      return this.api.apiService.getUsersByChatId(this.chatId); // возвращаем Observable
     }
+    return of([]);
   }
 
   sendMessage() {
@@ -137,14 +176,6 @@ export class ChatDialogComponent implements OnInit {
     };
     this.wsService.sendMessage('/app/chat', messagePayload);
     this.newMessage = ''
-  }
-
-  private loadMessages() {
-    if (this.chatId !== null) {
-      this.api.apiService.getAllMessagesByChatId(this.chatId).subscribe({
-        next: (messages) => this.messages$.next(messages)
-      });
-    }
   }
 
   onDeleteChat(event: Event) {

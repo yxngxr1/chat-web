@@ -2,14 +2,24 @@
     <h2 mat-dialog-title>{{ data.isGroup ? 'Создать групповой чат' : 'Создать приватный чат' }}</h2>
     <mat-dialog-content>
         <mat-form-field>
-            <input matInput placeholder="Поиск по нику" [(ngModel)]="searchQuery" (input)="filterUsers()">
+            <input matInput placeholder="Поиск по нику" [(ngModel)]="searchQuery" (input)="loadUsers()">
         </mat-form-field>
+        <mat-card class="selected-users-card" appearance="outlined">
+            <mat-card-content class="selected-users-content">
+                <button mat-stroked-button
+                        *ngFor="let user of selectedUsers"
+                        class="selected-user-item"
+                        (click)="removeUserFromSelection(user)">
+                <span>{{ user.username }}</span>
+                </button>
+            </mat-card-content>
+        </mat-card>
         <mat-list>
-            <mat-list-item matRipple *ngFor="let user of filteredUsers"
-                (click)="toggleUserSelection(user)" [ngClass]="{'selected-user': user.selected}">
+            <mat-list-item matRipple *ngFor="let user of users"
+                (click)="addUserToSelection(user)">
                 <div class="user-item">
                     <span>{{ user.username }}</span>
-                    <mat-checkbox *ngIf="data.isGroup" [(ngModel)]="user.selected" (click)="$event.stopPropagation()"></mat-checkbox>
+                    <!-- <mat-checkbox *ngIf="data.isGroup" (click)="$event.stopPropagation()"></mat-checkbox> -->
                 </div>
             </mat-list-item>
         </mat-list>

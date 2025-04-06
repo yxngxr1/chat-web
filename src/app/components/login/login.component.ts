@@ -35,8 +35,7 @@ export class LoginComponent {
 
   constructor(
     private authService: AuthService,
-    private api: ApiService,
-    private router: Router
+    private api: ApiService
   ) {}
 
   onLoginSubmit() {
