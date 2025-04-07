@@ -21,6 +21,13 @@ mat-list-item {
   
 }
 
+.left-part {
+  display: flex;
+  align-items: center;
+  gap: 8px; // расстояние между иконкой и названием
+  flex: 1; 
+}
+
 .chat-item {
   display: flex;
   align-items: center;

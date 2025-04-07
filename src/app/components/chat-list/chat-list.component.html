@@ -3,7 +3,16 @@
     [ngClass]="{'active-chat': isActive(chat.id)}"
     (click)="navigateToChat(chat.id)">
     <div class="chat-item">
-      {{ chat.name }}
+      <div class="left-part">
+        <mat-icon class="chat-type-icon" [ngSwitch]="chat.type">
+          <ng-container *ngSwitchCase="'PRIVATE'">person</ng-container>
+          <ng-container *ngSwitchCase="'GROUP'">people</ng-container>
+          <ng-container *ngSwitchCase="'SELF'">bookmark</ng-container>
+          <ng-container *ngSwitchDefault>chat</ng-container>
+        </mat-icon>
+        <span class="chat-name">{{ chat.name }}</span>
+      </div>
+    
       <div class="unread-count" *ngIf="chat.unreadCount && chat.unreadCount > 0">
         <mat-icon>mark_unread_chat_alt</mat-icon>
         <span>{{ chat.unreadCount }}</span>
